@@ -147,7 +147,7 @@ plt.ylabel('losses')
 plt.show()
 
 
-#-------------- Testing ----------------:
+#-------------- Testing -----------------:
 
 def predict(model, device, dataloader):
 
