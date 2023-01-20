@@ -19,7 +19,7 @@ class Linear_Net(nn.Module):
     def __init__(self): 
         super(Linear_Net, self).__init__() 
         input_size = 2048
-        hidden_size1 = 100
+        hidden_size1 = 5
         output_size = 1
 
         self.fl1 = nn.Linear(input_size, hidden_size1)
@@ -46,7 +46,7 @@ def train(model, device, train_dataloader, optim):
         optim.zero_grad() 
         pred_prob = model(fp.float())
 
-        loss = loss_func(pred_prob, y)
+        loss = loss_func(pred_prob, y.view(-1,1))
         loss.backward() 
 
         optim.step() 
@@ -73,7 +73,7 @@ def test(model, device, test_dataloader, epoch):
         for fp, y in test_dataloader:
             fp, y = fp.to(device), y.to(device) 
             pred_prob = model(fp)
-            loss_collect += loss_func(pred_prob, y).item()
+            loss_collect += loss_func(pred_prob, y.view(-1,1)).item()
   
     loss_collect /= len(test_dataloader.dataset)
     
@@ -104,7 +104,7 @@ class PDB(Dataset):
 data_set = PDB('pdbind_full_fp2.csv') 
 
 #-------------- Data Loader ----------------:
-batch_size = 2
+batch_size = 100
 
 data_loader = DataLoader(data_set, batch_size=batch_size,shuffle=True ) 
 
@@ -117,17 +117,17 @@ test_loader = torch.utils.data.DataLoader(dataset = data_set,
                                           shuffle=True)
 
 #-------------- Run training loop ----------------:
-learning_rate = 0.5
+learning_rate = 0.001
 torch.manual_seed(0)
 device = torch.device("cpu")
 
 model = Linear_Net() 
-optimizer = optim.Adadelta(model.parameters(), lr = learning_rate) 
+optimizer = optim.Adam(model.parameters(), lr = learning_rate) 
 
 losses_train = []
 losses_test = []
 
-for epoch in range(1, 11): 
+for epoch in range(1, 31): 
     train_loss = train(model, device, train_loader, optimizer)
     losses_train.append(train_loss)
 
