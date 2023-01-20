@@ -19,24 +19,16 @@ class Linear_Net(nn.Module):
     def __init__(self): 
         super(Linear_Net, self).__init__() 
         input_size = 2048
-        hidden_size1 = 60
-        hidden_size2 = 30
-        hidden_size3 = 3
+        hidden_size1 = 100
         output_size = 1
 
-        self.fl1 = nn.Linear(input_size, hidden_size1) 
-        self.fl2 = nn.Linear(hidden_size1, hidden_size2) 
-        self.fl3 = nn.Linear(hidden_size2, hidden_size3) 
-        self.fl4 = nn.Linear(hidden_size3, output_size) 
+        self.fl1 = nn.Linear(input_size, hidden_size1)
+        self.fl2 = nn.Linear(hidden_size1, output_size) 
         
     def forward(self, x):
         out = self.fl1(x)
         out = F.relu(out) 
         out = self.fl2(out)
-        out = F.relu(out) 
-        out = self.fl3(out)
-        out = F.relu(out) 
-        out = self.fl4(out)
         
         return out 
 
@@ -76,7 +68,7 @@ def test(model, device, test_dataloader, epoch):
     model.eval()
     loss_collect = 0 
     loss_func = torch.nn.L1Loss(reduction='sum') 
-
+    
     with torch.no_grad(): 
         for fp, y in test_dataloader:
             fp, y = fp.to(device), y.to(device) 
@@ -125,7 +117,7 @@ test_loader = torch.utils.data.DataLoader(dataset = data_set,
                                           shuffle=True)
 
 #-------------- Run training loop ----------------:
-learning_rate = 0.05
+learning_rate = 0.5
 torch.manual_seed(0)
 device = torch.device("cpu")
 
@@ -150,7 +142,7 @@ plt.ylabel('train losses')
 plt.plot(losses_test, label ='test losses')
 plt.legend()
 plt.xlabel('time')
-plt.ylabel('test losses')
+plt.ylabel('losses')
 
 plt.show()
 
